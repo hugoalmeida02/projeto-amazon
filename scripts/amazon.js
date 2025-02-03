@@ -76,4 +76,5 @@ document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
 
     updateCartQuantity();
   });
+  
 });
