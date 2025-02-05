@@ -3,8 +3,6 @@ import { products } from "../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import { deliveryOptions } from "../data/deliveryOptions.js";
 
-let carSummaryHtml = ``;
-
 function productInfo(cartItemId) {
   let matchingProduct;
   products.forEach((product) => {
@@ -13,6 +11,50 @@ function productInfo(cartItemId) {
     }
   });
   return matchingProduct;
+}
+
+function calculateDeliveryDate(deliveryOption) {
+  const today = dayjs();
+  const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+  const deliveryDateFormat = deliveryDate.format("dddd, MMMM DD");
+
+  return deliveryDateFormat;
+}
+
+function deliveryOptionsHTML(index, cartItem, productId) {
+  let deliveryHTML = ``;
+
+  deliveryOptions.forEach((deliveryOption) => {
+    const deliveryDate = calculateDeliveryDate(deliveryOption);
+
+    const priceString =
+      deliveryOption.priceCents === 0
+        ? "FREE"
+        : `$${(deliveryOption.priceCents / 100).toFixed(2)} -`;
+
+    const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
+
+    deliveryHTML += `
+  <div class="delivery-option js-delivery-option"
+  data-product-id="${productId}"
+  data-delivery-option-id="${deliveryOption.id}">
+                <input type="radio" ${isChecked ? `checked` : ``}
+                  class="delivery-option-input"
+                  name="delivery-option-${productId}"
+                  data-product-id="">
+                <div>
+                  <div class="delivery-option-date">
+                    ${deliveryDate}
+                  </div>
+                  <div class="delivery-option-price">
+                    ${priceString} Shipping
+                  </div>
+                </div>
+              </div>
+  `;
+  });
+
+  return deliveryHTML;
 }
 
 function optionInfo(cartItemdeliveryOptionId) {
@@ -25,13 +67,15 @@ function optionInfo(cartItemdeliveryOptionId) {
   return matchingOption;
 }
 
-cart.forEach((cartItem, index) => {
-  let product = productInfo(cartItem.productId);
-  let deliveryOption = optionInfo(cartItem.deliveryOptionId);
+function renderOrderSummary() {
+  let carSummaryHtml = ``;
+  cart.forEach((cartItem, index) => {
+    let product = productInfo(cartItem.productId);
+    let deliveryOption = optionInfo(cartItem.deliveryOptionId);
 
-  const deliveryDate = calculateDeliveryDate(deliveryOption)
+    const deliveryDate = calculateDeliveryDate(deliveryOption);
 
-  carSummaryHtml += `
+    carSummaryHtml += `
     <div class="cart-item-container js-container-${product.id}">
             <div class="delivery-date">
               Delivery date: ${deliveryDate}
@@ -74,65 +118,25 @@ cart.forEach((cartItem, index) => {
             </div>
           </div>`;
 
-  document.querySelector(".js-order-summary").innerHTML = carSummaryHtml;
-});
-
-function calculateDeliveryDate(deliveryOption) {
-  const today = dayjs();
-  const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
-  const deliveryDateFormat = deliveryDate.format("dddd, MMMM DD");
-
-  return deliveryDateFormat
-}
-
-function deliveryOptionsHTML(index, cartItem, productId) {
-  let deliveryHTML = ``;
-
-  deliveryOptions.forEach((deliveryOption) => {
-    const deliveryDate = calculateDeliveryDate(deliveryOption)
-
-    const priceString =
-      deliveryOption.priceCents === 0
-        ? "FREE"
-        : `$${(deliveryOption.priceCents / 100).toFixed(2)} -`;
-
-    const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
-
-    deliveryHTML += `
-    <div class="delivery-option js-delivery-option"
-    data-product-id="${productId}"
-    data-delivery-option-id="${deliveryOption.id}">
-                  <input type="radio" ${isChecked ? `checked` : ``}
-                    class="delivery-option-input"
-                    name="delivery-option-${productId}"
-                    data-product-id="">
-                  <div>
-                    <div class="delivery-option-date">
-                      ${deliveryDate}
-                    </div>
-                    <div class="delivery-option-price">
-                      ${priceString} Shipping
-                    </div>
-                  </div>
-                </div>
-    `;
+    document.querySelector(".js-order-summary").innerHTML = carSummaryHtml;
   });
 
-  return deliveryHTML;
+  document.querySelectorAll(".js-delete").forEach((link) => {
+    link.addEventListener("click", () => {
+      const productId = link.dataset.productId;
+      removeFromCart(productId);
+
+      document.querySelector(`.js-container-${productId}`).remove();
+    });
+  });
+
+  document.querySelectorAll(".js-delivery-option").forEach((link) => {
+    link.addEventListener("click", () => {
+      const { productId, deliveryOptionId } = link.dataset;
+      updateDeliveryOption(productId, deliveryOptionId);
+      renderOrderSummary();
+    });
+  });
 }
 
-document.querySelectorAll(".js-delete").forEach((link) => {
-  link.addEventListener("click", () => {
-    const productId = link.dataset.productId;
-    removeFromCart(productId);
-
-    document.querySelector(`.js-container-${productId}`).remove();
-  });
-});
-
-document.querySelectorAll(".js-delivery-option").forEach((link) => {
-  link.addEventListener("click", () => {
-    const {productId, deliveryOptionId} = link.dataset
-    updateDeliveryOption(productId, deliveryOptionId)
-  })
-})
+renderOrderSummary();
