@@ -1,9 +1,9 @@
 import { cart, removeFromCart, updateDeliveryOption } from "../../data/cart.js";
-import { productInfo} from "../../data/products.js";
+import { productInfo } from "../../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import { deliveryOptions, optionInfo } from "../../data/deliveryOptions.js";
 import formatCurrency from "../utils/money.js";
-
+import { renderPaymentSummary } from "./paymentSummary.js";
 
 function calculateDeliveryDate(deliveryOption) {
   const today = dayjs();
@@ -48,8 +48,6 @@ function deliveryOptionsHTML(index, cartItem, productId) {
 
   return deliveryHTML;
 }
-
-
 
 export function renderOrderSummary() {
   let carSummaryHtml = ``;
@@ -111,6 +109,8 @@ export function renderOrderSummary() {
       removeFromCart(productId);
 
       document.querySelector(`.js-container-${productId}`).remove();
+
+      renderPaymentSummary();
     });
   });
 
@@ -118,8 +118,9 @@ export function renderOrderSummary() {
     link.addEventListener("click", () => {
       const { productId, deliveryOptionId } = link.dataset;
       updateDeliveryOption(productId, deliveryOptionId);
+      
       renderOrderSummary();
+      renderPaymentSummary();
     });
   });
 }
-
