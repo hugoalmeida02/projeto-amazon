@@ -1,4 +1,4 @@
-import { cart, removeFromCart } from "../data/cart.js";
+import { cart, removeFromCart, updateDeliveryOption } from "../data/cart.js";
 import { products } from "../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import { deliveryOptions } from "../data/deliveryOptions.js";
@@ -69,7 +69,7 @@ cart.forEach((cartItem, index) => {
                 <div class="delivery-options-title">
                   Choose a delivery option:
                 </div>
-                ${deliveryOptionsHTML(index, cartItem)}
+                ${deliveryOptionsHTML(index, cartItem, product.id)}
               </div>
             </div>
           </div>`;
@@ -85,7 +85,7 @@ function calculateDeliveryDate(deliveryOption) {
   return deliveryDateFormat
 }
 
-function deliveryOptionsHTML(index, cartItem) {
+function deliveryOptionsHTML(index, cartItem, productId) {
   let deliveryHTML = ``;
 
   deliveryOptions.forEach((deliveryOption) => {
@@ -99,10 +99,13 @@ function deliveryOptionsHTML(index, cartItem) {
     const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
 
     deliveryHTML += `
-    <div class="delivery-option">
+    <div class="delivery-option js-delivery-option"
+    data-product-id="${productId}"
+    data-delivery-option-id="${deliveryOption.id}">
                   <input type="radio" ${isChecked ? `checked` : ``}
-                    class="delivery-option-input js-delivery-option-${index}"
-                    name="delivery-option-${index}">
+                    class="delivery-option-input"
+                    name="delivery-option-${productId}"
+                    data-product-id="">
                   <div>
                     <div class="delivery-option-date">
                       ${deliveryDate}
@@ -126,3 +129,10 @@ document.querySelectorAll(".js-delete").forEach((link) => {
     document.querySelector(`.js-container-${productId}`).remove();
   });
 });
+
+document.querySelectorAll(".js-delivery-option").forEach((link) => {
+  link.addEventListener("click", () => {
+    const {productId, deliveryOptionId} = link.dataset
+    updateDeliveryOption(productId, deliveryOptionId)
+  })
+})
