@@ -1,17 +1,9 @@
 import { cart, removeFromCart, updateDeliveryOption } from "../../data/cart.js";
-import { products } from "../../data/products.js";
+import { productInfo} from "../../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
-import { deliveryOptions } from "../../data/deliveryOptions.js";
+import { deliveryOptions, optionInfo } from "../../data/deliveryOptions.js";
+import { formatCurrency } from "../utils/money.js";
 
-function productInfo(cartItemId) {
-  let matchingProduct;
-  products.forEach((product) => {
-    if (product.id === cartItemId) {
-      matchingProduct = product;
-    }
-  });
-  return matchingProduct;
-}
 
 function calculateDeliveryDate(deliveryOption) {
   const today = dayjs();
@@ -57,15 +49,7 @@ function deliveryOptionsHTML(index, cartItem, productId) {
   return deliveryHTML;
 }
 
-function optionInfo(cartItemdeliveryOptionId) {
-  let matchingOption;
-  deliveryOptions.forEach((option) => {
-    if (option.id === cartItemdeliveryOptionId) {
-      matchingOption = option;
-    }
-  });
-  return matchingOption;
-}
+
 
 export function renderOrderSummary() {
   let carSummaryHtml = ``;
@@ -90,7 +74,7 @@ export function renderOrderSummary() {
                 ${product.name}
                 </div>
                 <div class="product-price">
-                  $${(product.priceCents / 100).toFixed(2)}
+                  $${formatCurrency(product.priceCents)}
                 </div>
                 <div class="product-quantity">
                   <span>

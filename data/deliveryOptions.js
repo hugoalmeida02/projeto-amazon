@@ -1,3 +1,13 @@
+export function optionInfo(cartItemdeliveryOptionId) {
+  let matchingOption;
+  deliveryOptions.forEach((option) => {
+    if (option.id === cartItemdeliveryOptionId) {
+      matchingOption = option;
+    }
+  });
+  return matchingOption;
+}
+
 export const deliveryOptions = [
   {
     id: "1",
