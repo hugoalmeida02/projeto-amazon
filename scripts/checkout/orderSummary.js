@@ -76,11 +76,11 @@ export function renderOrderSummary() {
                 </div>
                 <div class="product-quantity">
                   <span>
-                    Quantity: <span class="quantity-label">${
-                      cartItem.quantity
-                    }</span>
+                    Quantity: <span class="quantity-label">
+                    ${cartItem.quantity}
                   </span>
-                  <span class="update-quantity-link link-primary">
+                  </span>
+                  <span class="update-quantity-link link-primary js-update">
                     Update
                   </span>
                   <span data-product-id="${
@@ -123,4 +123,11 @@ export function renderOrderSummary() {
       renderPaymentSummary();
     });
   });
+
+  document.querySelectorAll(".js-update").forEach((link) => {
+    link.addEventListener("click", () => {
+        
+    })
+
+  })
 }
