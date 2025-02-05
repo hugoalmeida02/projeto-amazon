@@ -1,7 +1,7 @@
 import { cart } from "../../data/cart.js";
 import { productInfo } from "../../data/products.js";
 import { optionInfo } from "../../data/deliveryOptions.js";
-import { formatCurrency } from "../utils/money.js";
+import formatCurrency from "../utils/money.js";
 
 export function renderPaymentSummary() {
   let paymentHTML = ``;

@@ -2,7 +2,7 @@ import { cart, removeFromCart, updateDeliveryOption } from "../../data/cart.js";
 import { productInfo} from "../../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import { deliveryOptions, optionInfo } from "../../data/deliveryOptions.js";
-import { formatCurrency } from "../utils/money.js";
+import formatCurrency from "../utils/money.js";
 
 
 function calculateDeliveryDate(deliveryOption) {
