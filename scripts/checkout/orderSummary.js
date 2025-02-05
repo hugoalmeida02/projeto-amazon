@@ -76,11 +76,12 @@ export function renderOrderSummary() {
                 </div>
                 <div class="product-quantity">
                   <span>
-                    Quantity: <span class="quantity-label">
+                    Quantity: <span class="quantity-label js-quantity-${product.id}">
                     ${cartItem.quantity}
                   </span>
                   </span>
-                  <span class="update-quantity-link link-primary js-update">
+                  <span class="update-quantity-link link-primary js-update" data-product-id="${
+                    product.id}">
                     Update
                   </span>
                   <span data-product-id="${
@@ -126,7 +127,9 @@ export function renderOrderSummary() {
 
   document.querySelectorAll(".js-update").forEach((link) => {
     link.addEventListener("click", () => {
-        
+        const productId = link.dataset.productId;
+        console.log(productId);
+        document.querySelector(".js-quantity-${productId}")
     })
 
   })
