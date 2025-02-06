@@ -17,6 +17,16 @@ function saveToStorage() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
+export function updateCartQuantity(quantityCart) {
+  let quantity = 0;
+
+  cart.forEach((product) => {
+    quantity += product.quantity;
+  });
+
+  document.querySelector(".js-quantity").textContent = quantity;
+}
+
 export function addToCart(productId, quantity) {
   let matchingItem;
 
@@ -25,7 +35,7 @@ export function addToCart(productId, quantity) {
       matchingItem = cartItem;
     }
   });
-  
+
   if (matchingItem) {
     matchingItem.quantity += quantity;
   } else {
