@@ -135,7 +135,7 @@ export function renderOrderSummary() {
       const productId = link.dataset.productId;
       let container = document.querySelector(`.js-quantity-${productId}`);
       container.innerHTML = `
-      <input type="number" class="js-quantity-update-${productId}">
+      <input type="number" class="input-update js-quantity-update-${productId}" value="1">
       <span class="update-quantity-link link-primary js-save" data-product-id="${productId}">
                     Save
                   </span>`;
