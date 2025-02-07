@@ -1,19 +1,11 @@
 import { cart, removeFromCart, updateDeliveryOption } from "../../data/cart.js";
 import { productInfo } from "../../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
-import { deliveryOptions, optionInfo } from "../../data/deliveryOptions.js";
+import { deliveryOptions, optionInfo, calculateDeliveryDate } from "../../data/deliveryOptions.js";
 import formatCurrency from "../utils/money.js";
 import { renderPaymentSummary } from "./paymentSummary.js";
 
-function calculateDeliveryDate(deliveryOption) {
-  const today = dayjs();
-  const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
-  const deliveryDateFormat = deliveryDate.format("dddd, MMMM DD");
-
-  return deliveryDateFormat;
-}
-
-function deliveryOptionsHTML(index, cartItem, productId) {
+function deliveryOptionsHTML(cartItem, productId) {
   let deliveryHTML = ``;
 
   deliveryOptions.forEach((deliveryOption) => {
@@ -51,14 +43,14 @@ function deliveryOptionsHTML(index, cartItem, productId) {
 
 export function renderOrderSummary() {
   let carSummaryHtml = ``;
-  cart.forEach((cartItem, index) => {
+  cart.forEach((cartItem) => {
     let product = productInfo(cartItem.productId);
     let deliveryOption = optionInfo(cartItem.deliveryOptionId);
 
     const deliveryDate = calculateDeliveryDate(deliveryOption);
 
     carSummaryHtml += `
-    <div class="cart-item-container js-container-${product.id}">
+    <div class="cart-item-container js-cart-item-container js-container-${product.id}">
             <div class="delivery-date">
               Delivery date: ${deliveryDate}
             </div>
@@ -101,7 +93,7 @@ export function renderOrderSummary() {
                 <div class="delivery-options-title">
                   Choose a delivery option:
                 </div>
-                ${deliveryOptionsHTML(index, cartItem, product.id)}
+                ${deliveryOptionsHTML(cartItem, product.id)}
               </div>
             </div>
           </div>`;
