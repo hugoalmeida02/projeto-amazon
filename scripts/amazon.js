@@ -1,6 +1,5 @@
 import { products } from "../data/products.js";
-import formatCurrency from "./utils/money.js"
-import {cart} from '../data/cart-class.js' 
+import { cart } from "../data/cart-class.js";
 
 let productHTML = ``;
 
@@ -18,14 +17,14 @@ products.forEach((product) => {
 
           <div class="product-rating-container">
             <img class="product-rating-stars"
-              src="images/ratings/rating-${product.rating.stars * 10}.png">
+              src="${product.getStarsUrl()}">
             <div class="product-rating-count link-primary">
             ${product.rating.count}
             </div>
           </div>
 
           <div class="product-price">
-          $${formatCurrency(product.priceCents)}
+          ${product.getPrice()}
           </div>
 
           <div class="product-quantity-container">
@@ -62,12 +61,13 @@ document.querySelector(".js-products-grid").innerHTML = productHTML;
 document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
   button.addEventListener("click", () => {
     const productId = button.dataset.productId;
-    let quantity = Number(document.querySelector(`.js-quantity-slector-${productId}`).value)
+    let quantity = Number(
+      document.querySelector(`.js-quantity-slector-${productId}`).value
+    );
     cart.addToCart(productId, quantity);
 
     cart.updateCartQuantity();
   });
-  
 });
 
 cart.updateCartQuantity();
