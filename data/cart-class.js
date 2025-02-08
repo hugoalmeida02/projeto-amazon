@@ -84,9 +84,5 @@ class Cart {
   }
 }
 
-const cart = new Cart("cart-oop");
-const businessCart = new Cart("businnessCart-oop");
+export const cart = new Cart("cart");
 
-console.log(cart);
-console.log(businessCart);
-console.log(businessCart instanceof Cart);

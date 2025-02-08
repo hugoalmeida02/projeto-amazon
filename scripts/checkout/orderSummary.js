@@ -1,7 +1,10 @@
-import { cart, removeFromCart, updateDeliveryOption } from "../../data/cart.js";
+import { cart } from "../../data/cart-class.js";
 import { productInfo } from "../../data/products.js";
-import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
-import { deliveryOptions, optionInfo, calculateDeliveryDate } from "../../data/deliveryOptions.js";
+import {
+  deliveryOptions,
+  optionInfo,
+  calculateDeliveryDate,
+} from "../../data/deliveryOptions.js";
 import formatCurrency from "../utils/money.js";
 import { renderPaymentSummary } from "./paymentSummary.js";
 
@@ -43,14 +46,16 @@ function deliveryOptionsHTML(cartItem, productId) {
 
 export function renderOrderSummary() {
   let carSummaryHtml = ``;
-  cart.forEach((cartItem) => {
+  cart.cartItems.forEach((cartItem) => {
     let product = productInfo(cartItem.productId);
     let deliveryOption = optionInfo(cartItem.deliveryOptionId);
 
     const deliveryDate = calculateDeliveryDate(deliveryOption);
 
     carSummaryHtml += `
-    <div class="cart-item-container js-cart-item-container js-container-${product.id}">
+    <div class="cart-item-container js-cart-item-container js-container-${
+      product.id
+    }">
             <div class="delivery-date">
               Delivery date: ${deliveryDate}
             </div>
@@ -75,10 +80,17 @@ export function renderOrderSummary() {
                     }">
                     ${cartItem.quantity}
                   </span>
+                  <input type="number" value="1" class="input-quantity js-quantity-update-${
+                    product.id
+                  }" style="display: none;">
+                  <span class="update-quantity-link link-primary js-save-${
+                    product.id
+                  }" data-product-id="${product.id}" style="display: none;">
+                    Save
                   </span>
                   <span class="update-quantity-link link-primary js-update" data-product-id="${
                     product.id
-                  }">
+                  }" style="display: inline-block;">
                     Update
                   </span>
                   <span data-product-id="${
@@ -104,7 +116,7 @@ export function renderOrderSummary() {
   document.querySelectorAll(".js-delete").forEach((link) => {
     link.addEventListener("click", () => {
       const productId = link.dataset.productId;
-      removeFromCart(productId);
+      cart.removeFromCart(productId);
 
       document.querySelector(`.js-container-${productId}`).remove();
 
@@ -115,7 +127,7 @@ export function renderOrderSummary() {
   document.querySelectorAll(".js-delivery-option").forEach((link) => {
     link.addEventListener("click", () => {
       const { productId, deliveryOptionId } = link.dataset;
-      updateDeliveryOption(productId, deliveryOptionId);
+      cart.updateDeliveryOption(productId, deliveryOptionId);
 
       renderOrderSummary();
       renderPaymentSummary();
@@ -126,45 +138,44 @@ export function renderOrderSummary() {
     link.addEventListener("click", () => {
       const productId = link.dataset.productId;
       let container = document.querySelector(`.js-quantity-${productId}`);
-      container.innerHTML = `
-      <input type="number" class="input-update js-quantity-update-${productId}" value="1">
-      <span class="update-quantity-link link-primary js-save" data-product-id="${productId}">
-                    Save
-                  </span>`;
-      link.innerHTML = ``;
+      link.style.display = "none";
 
-      document.querySelectorAll(".js-save").forEach((link1) => {
-        link1.addEventListener("click", () => {
-          const productId = link1.dataset.productId;
+      const saveBtn = document.querySelector(`.js-save-${productId}`);
+      const input = document.querySelector(`.js-quantity-update-${productId}`);
 
-          const input = document.querySelector(
-            `.js-quantity-update-${productId}`
-          );
-          let quantity = input.value;
+      saveBtn.style.display = "inline-block";
+      input.style.display = "inline-block";
 
-          quantity = Math.round(quantity);
-          if (quantity === 0) {
-            removeFromCart(productId);
+      saveBtn.addEventListener("click", () => {
+        const productId = saveBtn.dataset.productId;
 
-            document.querySelector(`.js-container-${productId}`).remove();
+        let quantity = input.value;
 
-            renderPaymentSummary();
-          } else if (quantity < 0) {
-            window.alert(`Not a valid quantity`);
-          } else {
-            cart.forEach((cartItem) => {
-              if (cartItem.productId === productId) {
-                cartItem.quantity = quantity;
+        quantity = Math.round(quantity);
+        if (quantity === 0) {
+          cart.removeFromCart(productId);
 
-                container.innerHTML = `${cartItem.quantity}`;
+          document.querySelector(`.js-container-${productId}`).remove();
 
-                link.innerHTML = `Update`;
-                renderPaymentSummary();
-                localStorage.setItem("cart", JSON.stringify(cart));
-              }
-            });
-          }
-        });
+          renderPaymentSummary();
+        } else if (quantity < 0) {
+          window.alert(`Not a valid quantity`);
+        } else {
+          cart.cartItems.forEach((cartItem) => {
+
+            if (cartItem.productId === productId) {
+              cartItem.quantity = quantity;
+
+              container.innerHTML = `${quantity}`;
+              renderPaymentSummary();
+            }
+          });
+          link.style.display = "inline-block";
+          saveBtn.style.display = "none";
+          input.style.display = "none";
+
+          cart.saveToStorage()
+        }
       });
     });
   });
