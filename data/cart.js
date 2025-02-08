@@ -1,10 +1,8 @@
+export let cart;
 
+loadFromStorage();
 
-export let cart
-
-loadFromStorage()
-
-export function loadFromStorage(){
+export function loadFromStorage() {
   cart = JSON.parse(localStorage.getItem("cart")) || [
     {
       productId: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
@@ -61,7 +59,6 @@ export function removeFromCart(productId) {
 }
 
 export function updateDeliveryOption(productId, deliveryOptionId) {
-  
   let matchingItem;
 
   cart.forEach((cartItem) => {
@@ -71,6 +68,6 @@ export function updateDeliveryOption(productId, deliveryOptionId) {
   });
 
   matchingItem.deliveryOptionId = deliveryOptionId;
-  
+
   saveToStorage();
 }
